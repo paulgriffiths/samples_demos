@@ -17,7 +17,7 @@ int main(void)
         make_std_writer(p1to2);
         close_pipe_pair(p2to3);
 
-        char * args[] = {"cat", "wordfile.asc", NULL};
+        char * args[] = {"cat", "wordfile.txt", NULL};
         execvp_or_die("cat", args);
     }
 

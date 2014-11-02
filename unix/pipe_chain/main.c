@@ -16,7 +16,7 @@ int main(void)
     if ( (pid[0] = fork_or_die()) == 0 ) {
         make_std_writer(pipe_fds);
 
-        char * args[] = {"cat", "wordfile.asc", NULL};
+        char * args[] = {"cat", "wordfile.txt", NULL};
         execvp_or_die("cat", args);
     };
 
