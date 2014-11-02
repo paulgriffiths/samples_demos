@@ -1,6 +1,8 @@
 #ifndef PG_SAMPLES_AND_DEMOS_STACK_GENERIC_H
 #define PG_SAMPLES_AND_DEMOS_STACK_GENERIC_H
 
+#include <stdbool.h>
+
 enum stack_type {
     STACK_CHAR,
     STACK_INT,
@@ -16,5 +18,6 @@ Stack stack_create(const size_t capacity, const enum stack_type type);
 void stack_destroy(Stack stack);
 void stack_push(Stack stack, ...);
 void stack_pop(Stack stack, void * p);
+bool stack_is_empty(Stack stack);
 
 #endif      /*  PG_SAMPLES_AND_DEMOS_STACK_GENERIC_H  */
