@@ -1,9 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include "pipe_utils.h"
 #include "process_utils.h"
 
@@ -14,12 +11,17 @@ int main(void)
 
     make_pipes(pipe_fds, NULL);
 
+    /*  Fork child to run cat and pipe output to uniq  */
+
     if ( (pid[0] = fork_or_die()) == 0 ) {
         make_std_writer(pipe_fds);
 
         char * args[] = {"cat", "wordfile.asc", NULL};
         execvp_or_die("cat", args);
     };
+
+    /*  Fork child to run uniq, get input from
+     *  cat, and write output to standard output  */
 
     if ( (pid[1] = fork_or_die()) == 0 ) {
         make_std_reader(pipe_fds);
@@ -28,14 +30,10 @@ int main(void)
         execvp_or_die("uniq", args);
     };
 
+    /*  Close pipes in parent and wait for children  */
+
     close_pipe_pair(pipe_fds);
-    
-    for ( size_t i = 0; i < 2; ++i ) {
-        if ( waitpid(pid[i], NULL, 0) == -1 ) {
-            perror("error calling waitpid()");
-            return EXIT_FAILURE;
-        }
-    }
+    reap_children(pid, 2);
 
     return 0;
 }
