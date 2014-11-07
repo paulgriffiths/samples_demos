@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include "gds_common.h"
 #include "stack.h"
-#include "datatypes.h"
-#include "datatype.h"
 
 static const size_t GROWTH = 2;
 
@@ -26,8 +25,8 @@ struct stack * stack_create(const size_t capacity,
     struct stack * new_stack = malloc(sizeof *new_stack);
     if ( !new_stack ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            perror("couldn't allocate memory for stack");
-            exit(EXIT_FAILURE);
+            gds_strerror_quit("couldn't allocate memory for stack "
+                              "(%s, line %d)", __FILE__, __LINE__);
         }
         else {
             return NULL;
@@ -45,8 +44,8 @@ struct stack * stack_create(const size_t capacity,
     new_stack->elements = malloc(sizeof *new_stack->elements * capacity);
     if ( !new_stack->elements ) {
         if ( new_stack->exit_on_error ) {
-            perror("couldn't allocate memory for stack elements");
-            exit(EXIT_FAILURE);
+            gds_strerror_quit("couldn't allocate memory for stack elements "
+                              "(%s, line %d)", __FILE__, __LINE__);
         }
         else {
             free(new_stack);
@@ -61,7 +60,8 @@ struct stack * stack_create(const size_t capacity,
 
 void stack_destroy(struct stack * stack)
 {
-    if ( stack->type == DATATYPE_POINTER && stack->free_on_destroy ) {
+    if ( (stack->type == DATATYPE_POINTER ||
+          stack->type == DATATYPE_STRING) && stack->free_on_destroy ) {
         while ( !stack_is_empty(stack) ) {
             void * p;
             stack_pop(stack, &p);
@@ -86,8 +86,8 @@ bool stack_push(struct stack * stack, ...)
                                    sizeof *stack->elements * new_capacity);
             if ( !new_elements ) {
                 if ( stack->exit_on_error ) {
-                    perror("couldn't reallocate memory");
-                    exit(EXIT_FAILURE);
+                    gds_strerror_quit("couldn't reallocate memory for stack "
+                                      "(%s, %d)", __FILE__, __LINE__);
                 }
                 else {
                     return false;
@@ -98,8 +98,7 @@ bool stack_push(struct stack * stack, ...)
             stack->capacity = new_capacity;
         }
         else if ( stack->exit_on_error ) {
-            fprintf(stderr, "Stack full!\n");
-            exit(EXIT_FAILURE);
+            gds_error_quit("stack full (%s, line %d)", __FILE__, __LINE__);
         }
         else {
             return false;
@@ -120,8 +119,7 @@ bool stack_pop(struct stack * stack, void * p)
 {
     if ( stack_is_empty(stack) ) {
         if ( stack->exit_on_error ) {
-            fprintf(stderr, "Stack empty!\n");
-            exit(EXIT_FAILURE);
+            gds_error_quit("stack empty (%s, line %d)", __FILE__, __LINE__);
         }
         else {
             return false;
@@ -159,4 +157,11 @@ size_t stack_capacity(struct stack * stack)
 size_t stack_free_space(struct stack * stack)
 {
     return stack->capacity - stack->top;
+}
+
+/*  Returns the number of elements currently on the stack  */
+
+size_t stack_size(struct stack * stack)
+{
+    return stack->top;
 }

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "datatypes.h"
+#include "gds_public_types.h"
 
 typedef struct stack * Stack;
 
@@ -18,5 +18,6 @@ bool stack_is_full(Stack stack);
 bool stack_is_empty(Stack stack);
 size_t stack_capacity(Stack stack);
 size_t stack_free_space(Stack stack);
+size_t stack_size(Stack stack);
 
 #endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_STACK_H  */

@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "stack.h"
+#include "queue.h"
 
-int main(void)
+void test_stack(void)
 {
     /*  Create, push and pop with stack of type int  */
 
@@ -69,7 +70,7 @@ int main(void)
 
     /*  Create, push and pop with stack of strings  */
 
-    Stack sstk = stack_create(5, DATATYPE_POINTER,
+    Stack sstk = stack_create(5, DATATYPE_STRING,
                               GDS_EXIT_ON_ERROR | GDS_FREE_ON_DESTROY);
 
     stack_push(sstk, strdup("First string"));
@@ -79,9 +80,9 @@ int main(void)
     stack_push(sstk, strdup("Fifth string"));
 
     for ( size_t i = 0; i < 3; ++i ) {
-        void * p;
+        char * p;
         stack_pop(sstk, &p);
-        printf("Popped string \"%s\" from stack.\n", (char *) p);
+        printf("Popped string \"%s\" from stack.\n", p);
         free(p);
     }
 
@@ -109,6 +110,142 @@ int main(void)
     stack_destroy(dstk);
     stack_destroy(cstk);
     stack_destroy(istk);
+}
+
+void test_queue(void)
+{
+    /*  Create, push and pop with queue of type int  */
+
+    Queue ique = queue_create(3, DATATYPE_INT, GDS_EXIT_ON_ERROR);
+
+    queue_push(ique, 123);
+    queue_push(ique, 456);
+    queue_push(ique, 789);
+
+    while ( !queue_is_empty(ique) ) {
+        int i;
+        queue_pop(ique, &i);
+        printf("Popped int %d from queue.\n", i);
+    }
+
+    /*  Create, push and pop with queue of type long  */
+
+    if ( sizeof(long) >= 8U ) {
+        Queue lque = queue_create(3, DATATYPE_LONG, GDS_EXIT_ON_ERROR);
+
+        queue_push(lque, 123000000000L);
+        queue_push(lque, 456000000000L);
+        queue_push(lque, 789000000000L);
+
+        while ( !queue_is_empty(lque) ) {
+            long l;
+            queue_pop(lque, &l);
+            printf("Popped long %ld from queue.\n", l);
+        }
+
+        queue_destroy(lque);
+    }
+
+    /*  Create, push and pop with queue of type float  */
+
+    Queue cque = queue_create(3, DATATYPE_CHAR, GDS_EXIT_ON_ERROR);
+
+    queue_push(cque, 'a');
+    queue_push(cque, 'b');
+    queue_push(cque, 'c');
+
+    while ( !queue_is_empty(cque) ) {
+        char c;
+        queue_pop(cque, &c);
+        printf("Popped float '%c' from queue.\n", c);
+    }
+
+    /*  Create, push and pop with queue of type double  */
+
+    Queue dque = queue_create(3, DATATYPE_DOUBLE, GDS_EXIT_ON_ERROR);
+
+    queue_push(dque, 1.23);
+    queue_push(dque, 4.56);
+    queue_push(dque, 7.89);
+
+    while ( !queue_is_empty(dque) ) {
+        double d;
+        queue_pop(dque, &d);
+        printf("Popped double %f from queue.\n", d);
+    }
+
+    /*  Create, push and pop with queue of strings  */
+
+    Queue sque = queue_create(5, DATATYPE_STRING,
+                              GDS_EXIT_ON_ERROR | GDS_FREE_ON_DESTROY);
+
+    queue_push(sque, strdup("First string"));
+    queue_push(sque, strdup("Second string"));
+    queue_push(sque, strdup("Third string"));
+    queue_push(sque, strdup("Fourth string"));
+    queue_push(sque, strdup("Fifth string"));
+
+    for ( size_t i = 0; i < 3; ++i ) {
+        char * p;
+        queue_pop(sque, &p);
+        printf("Popped string \"%s\" from queue.\n", p);
+        free(p);
+    }
+
+    /*  Create, push and pop with queue of type void *  */
+
+    Queue pque = queue_create(1, DATATYPE_POINTER,
+                              GDS_EXIT_ON_ERROR | GDS_RESIZABLE);
+
+    queue_push(pque, (void *) &ique);
+    queue_push(pque, (void *) &cque);
+    queue_push(pque, (void *) &dque);
+    queue_push(pque, (void *) &sque);
+    queue_push(pque, (void *) &pque);
+
+    while ( !queue_is_empty(pque) ) {
+        void * p;
+        queue_pop(pque, &p);
+        printf("Popped pointer %p from queue.\n", p);
+    }
+
+    /*  Destroy queues and exit  */
+
+    queue_destroy(pque);
+    queue_destroy(sque);
+    queue_destroy(dque);
+    queue_destroy(cque);
+    queue_destroy(ique);
+}
+
+int main(int argc, char ** argv)
+{
+    bool stack = false, queue = false;
+
+    if ( argc < 2 ) {
+        stack = true;
+        queue = true;
+    }
+    else {
+        size_t i = 0;
+
+        while ( argv[++i] ) {
+            if ( !strcmp(argv[i], "stack") ) {
+                stack = true;
+            }
+            else if ( !strcmp(argv[i], "queue") ) {
+                queue = true;
+            }
+        }
+    }
+
+    if ( stack ) {
+        test_stack();
+    }
+
+    if ( queue ) {
+        test_queue();
+    }
 
     return 0;
 }

@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdarg.h>
 
-#include "datatype.h"
+#include "gdt.h"
 
 void gdt_set_value(struct gdt_generic_datatype * data,
                    const enum gds_datatype type, va_list ap)
@@ -50,6 +50,10 @@ void gdt_set_value(struct gdt_generic_datatype * data,
 
         case DATATYPE_DOUBLE:
             data->data.d = va_arg(ap, double);
+            break;
+
+        case DATATYPE_STRING:
+            data->data.pc = va_arg(ap, char *);
             break;
 
         case DATATYPE_POINTER:
@@ -108,6 +112,10 @@ void gdt_get_value(const struct gdt_generic_datatype * data,
 
         case DATATYPE_DOUBLE:
             *((double *) p) = data->data.d;
+            break;
+
+        case DATATYPE_STRING:
+            *((char **) p) = data->data.pc;
             break;
 
         case DATATYPE_POINTER:

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#include "datatypes.h"
+#include "gds_public_types.h"
 
 struct gdt_generic_datatype {
     union {
@@ -20,6 +20,7 @@ struct gdt_generic_datatype {
         unsigned long long int ull;
         size_t st;
         double d;
+        char * pc;
         void * p;
     } data;
 };
