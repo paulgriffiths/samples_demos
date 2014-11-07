@@ -30,7 +30,7 @@ struct queue * queue_create(const size_t capacity,
     struct queue * new_queue = malloc(sizeof *new_queue);
     if ( !new_queue ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("couldn't allocate memory for queue "
+            gds_strerror_quit("memory allocation failed "
                               "(%s, line %d)", __FILE__, __LINE__);
         }
         else {
@@ -51,7 +51,7 @@ struct queue * queue_create(const size_t capacity,
     new_queue->elements = malloc(sizeof *new_queue->elements * capacity);
     if ( !new_queue->elements ) {
         if ( new_queue->exit_on_error ) {
-            gds_strerror_quit("couldn't allocate memory for queue elements "
+            gds_strerror_quit("memory allocation failed "
                               "(%s, line %d)", __FILE__, __LINE__);
         }
         else {
@@ -93,7 +93,7 @@ bool queue_push(struct queue * queue, ...)
                                    sizeof *queue->elements * new_capacity);
             if ( !new_elements ) {
                 if ( queue->exit_on_error ) {
-                    gds_strerror_quit("couldn't reallocate memory for queue "
+                    gds_strerror_quit("memory reallocation failed "
                                       "(%s, line %d)", __FILE__, __LINE__);
                 }
                 else {

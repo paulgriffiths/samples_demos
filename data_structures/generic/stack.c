@@ -25,7 +25,7 @@ struct stack * stack_create(const size_t capacity,
     struct stack * new_stack = malloc(sizeof *new_stack);
     if ( !new_stack ) {
         if ( opts & GDS_EXIT_ON_ERROR ) {
-            gds_strerror_quit("couldn't allocate memory for stack "
+            gds_strerror_quit("memory allocation failed "
                               "(%s, line %d)", __FILE__, __LINE__);
         }
         else {
@@ -44,7 +44,7 @@ struct stack * stack_create(const size_t capacity,
     new_stack->elements = malloc(sizeof *new_stack->elements * capacity);
     if ( !new_stack->elements ) {
         if ( new_stack->exit_on_error ) {
-            gds_strerror_quit("couldn't allocate memory for stack elements "
+            gds_strerror_quit("memory allocation failed "
                               "(%s, line %d)", __FILE__, __LINE__);
         }
         else {
@@ -86,7 +86,7 @@ bool stack_push(struct stack * stack, ...)
                                    sizeof *stack->elements * new_capacity);
             if ( !new_elements ) {
                 if ( stack->exit_on_error ) {
-                    gds_strerror_quit("couldn't reallocate memory for stack "
+                    gds_strerror_quit("memory reallocation failed "
                                       "(%s, %d)", __FILE__, __LINE__);
                 }
                 else {
