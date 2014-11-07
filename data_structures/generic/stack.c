@@ -131,6 +131,24 @@ bool stack_pop(struct stack * stack, void * p)
     return true;
 }
 
+/*  Peeks at the top element of the stack without popping it  */
+
+bool stack_peek(struct stack * stack, void * p)
+{
+    if ( stack_is_empty(stack) ) {
+        if ( stack->exit_on_error ) {
+            gds_error_quit("stack empty (%s, line %d)", __FILE__, __LINE__);
+        }
+        else {
+            return false;
+        }
+    }
+
+    gdt_get_value(&stack->elements[stack->top - 1], stack->type, p);
+
+    return true;
+}
+
 /*  Returns true if the stack is full  */
 
 bool stack_is_full(struct stack * stack)

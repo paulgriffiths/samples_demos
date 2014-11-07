@@ -14,6 +14,7 @@ Stack stack_create(const size_t capacity,
 void stack_destroy(Stack stack);
 bool stack_push(Stack stack, ...);
 bool stack_pop(Stack stack, void * p);
+bool stack_peek(Stack stack, void * p);
 bool stack_is_full(Stack stack);
 bool stack_is_empty(Stack stack);
 size_t stack_capacity(Stack stack);

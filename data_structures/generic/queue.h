@@ -14,6 +14,7 @@ Queue queue_create(const size_t capacity,
 void queue_destroy(Queue queue);
 bool queue_push(Queue queue, ...);
 bool queue_pop(Queue queue, void * p);
+bool queue_peek(Queue queue, void * p);
 bool queue_is_full(Queue queue);
 bool queue_is_empty(Queue queue);
 size_t queue_capacity(Queue queue);

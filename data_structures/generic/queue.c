@@ -163,6 +163,24 @@ bool queue_pop(struct queue * queue, void * p)
     return true;
 }
 
+/*  Peeks at the front element of the queue without popping it  */
+
+bool queue_peek(struct queue * queue, void * p)
+{
+    if ( queue_is_empty(queue) ) {
+        if ( queue->exit_on_error ) {
+            gds_error_quit("queue empty (%s, line %d)", __FILE__, __LINE__);
+        }
+        else {
+            return false;
+        }
+    }
+
+    gdt_get_value(&queue->elements[queue->front], queue->type, p);
+
+    return true;
+}
+
 /*  Returns true if the queue is full  */
 
 bool queue_is_full(struct queue * queue)
