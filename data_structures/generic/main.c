@@ -5,8 +5,10 @@
 #include <string.h>
 #include "stack.h"
 #include "queue.h"
+#include "test_stack.h"
+#include "test_logging.h"
 
-void test_stack(void)
+void test_stack_basic(void)
 {
     /*  Create, push and pop with stack of type int  */
 
@@ -112,7 +114,7 @@ void test_stack(void)
     stack_destroy(istk);
 }
 
-void test_queue(void)
+void test_queue_basic(void)
 {
     /*  Create, push and pop with queue of type int  */
 
@@ -220,6 +222,13 @@ void test_queue(void)
 
 int main(int argc, char ** argv)
 {
+    test_stack();
+
+    printf("%d successes and %d failures from %d tests.\n",
+           tests_get_successes(), tests_get_failures(),
+           tests_get_total_tests());
+    return 0;
+
     bool stack = false, queue = false;
 
     if ( argc < 2 ) {
@@ -240,11 +249,11 @@ int main(int argc, char ** argv)
     }
 
     if ( stack ) {
-        test_stack();
+        test_stack_basic();
     }
 
     if ( queue ) {
-        test_queue();
+        test_queue_basic();
     }
 
     return 0;
