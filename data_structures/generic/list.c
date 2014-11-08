@@ -168,7 +168,7 @@ bool list_element_at_index(struct list * list, const size_t index, void * p)
     return true;
 }
 
-/*  Gets the data at a specified index  */
+/*  Sets the data at a specified index  */
 
 bool list_set_element_at_index(struct list * list, const size_t index, ...)
 {
