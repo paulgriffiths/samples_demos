@@ -183,7 +183,8 @@ void gdt_free(struct gdt_generic_datatype * data, const enum gds_datatype type)
 /*  Compares two generic datatypes  */
 
 int gdt_compare(const struct gdt_generic_datatype * d1,
-                const struct gdt_generic_datatype * d2)
+                const struct gdt_generic_datatype * d2,
+                int (*compfunc)(const void *, const void *))
 {
     if ( d1->type != d2->type ) {
         gds_assert_quit("types are not compatible (%s, line %d)",
@@ -227,7 +228,7 @@ int gdt_compare(const struct gdt_generic_datatype * d1,
         return gdt_compare_string(&d1->data.pc, &d2->data.pc);
     }
     else if ( d1->type == DATATYPE_POINTER ) {
-        gds_assert_quit("pointer comparison not yet implemented");
+        return compfunc(&d1->data.p, &d2->data.p);
     }
     else {
         gds_assert_quit("unrecognized type (%s, line %d)", __FILE__, __LINE__);

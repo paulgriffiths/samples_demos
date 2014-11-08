@@ -367,9 +367,113 @@ static void test_vector_find(void)
     vector_destroy(vector);
 }
 
+struct hms {
+    int hour;
+    int minute;
+    int second;
+};
+
+int compare_hms(const void * s1, const void * s2)
+{
+    const struct hms * hms1 = *((const struct hms **) s1);
+    const struct hms * hms2 = *((const struct hms **) s2);
+
+    int hours_comp, minutes_comp, seconds_comp;
+
+    if ( hms1->hour < hms2->hour ) {
+        hours_comp = -1;
+    }
+    else if ( hms1->hour > hms2->hour ) {
+        hours_comp = 1;
+    }
+    else {
+        hours_comp = 0;
+    }
+
+    if ( hms1->minute < hms2->minute ) {
+        minutes_comp = -1;
+    }
+    else if ( hms1->minute > hms2->minute ) {
+        minutes_comp = 1;
+    }
+    else {
+        minutes_comp = 0;
+    }
+
+    if ( hms1->second < hms2->second ) {
+        seconds_comp = -1;
+    }
+    else if ( hms1->second > hms2->second ) {
+        seconds_comp = 1;
+    }
+    else {
+        seconds_comp = 0;
+    }
+
+    if ( !hours_comp && !minutes_comp && !seconds_comp ) {
+        return 0;
+    }
+    else {
+        if ( hours_comp ) {
+            return hours_comp;
+        }
+        else if ( minutes_comp ) {
+            return minutes_comp;
+        }
+        else {
+            return seconds_comp;
+        }
+    }
+}
+
+void test_vector_find_struct(void)
+{
+    struct hms h1 = {1, 2, 3};
+    struct hms h2 = {1, 2, 4};
+    struct hms h3 = {2, 2, 3};
+    struct hms h4 = {4, 1, 1};
+    struct hms h5 = {5, 2, 4};
+
+    Vector vector = vector_create(4, DATATYPE_POINTER, 0, compare_hms);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, (void *) &h1);
+    vector_set_element_at_index(vector, 1, (void *) &h2);
+    vector_set_element_at_index(vector, 2, (void *) &h3);
+    vector_set_element_at_index(vector, 3, (void *) &h4);
+
+    bool status;
+    size_t index;
+
+    status = vector_find(vector, &index, (void *) &h1);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h2);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h3);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h4);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h5);
+    tests_log_test(!status, "vector_find() failed to find element");
+
+    vector_destroy(vector);
+}
+
 void test_vector(void)
 {
     test_vector_basic();
     test_vector_free_strings();
     test_vector_find();
+    test_vector_find_struct();
 }

@@ -12,6 +12,7 @@ struct vector {
     size_t capacity;
     enum gds_datatype type;
     struct gdt_generic_datatype * elements;
+    int (*compfunc)(const void *, const void *);
 
     bool free_on_destroy;
     bool exit_on_error;
@@ -23,7 +24,8 @@ static bool vector_insert_internal(struct vector * vector,
 /*  Creates and returns a new vector of specified type  */
 
 struct vector * vector_create(const size_t capacity,
-                              const enum gds_datatype type, const int opts)
+                              const enum gds_datatype type,
+                              const int opts, ...)
 {
     struct vector * new_vector = malloc(sizeof *new_vector);
     if ( !new_vector ) {
@@ -41,6 +43,16 @@ struct vector * vector_create(const size_t capacity,
     new_vector->type = type;
     new_vector->free_on_destroy = (opts & GDS_FREE_ON_DESTROY) ? true : false;
     new_vector->exit_on_error = (opts & GDS_EXIT_ON_ERROR) ? true : false;
+
+    va_list ap;
+    va_start(ap, opts);
+    if ( type == DATATYPE_POINTER ) {
+        new_vector->compfunc = va_arg(ap, int (*)(const void *, const void *));
+    }
+    else {
+        new_vector->compfunc = NULL;
+    }
+    va_end(ap);
 
     new_vector->elements = calloc(capacity, sizeof *new_vector->elements);
     if ( !new_vector->elements ) {
@@ -61,8 +73,10 @@ struct vector * vector_create(const size_t capacity,
 
 void vector_destroy(struct vector * vector)
 {
-    for ( size_t i = 0; i < vector->length; ++i ) {
-        gdt_free(&vector->elements[i], vector->type);
+    if ( vector->free_on_destroy ) {
+        for ( size_t i = 0; i < vector->length; ++i ) {
+            gdt_free(&vector->elements[i], vector->type);
+        }
     }
 
     free(vector->elements);
@@ -192,7 +206,7 @@ bool vector_set_element_at_index(struct vector * vector,
 
 /*  Finds an element in a vector  */
 
-bool vector_find(Vector vector, size_t * index, ...)
+bool vector_find(struct vector * vector, size_t * index, ...)
 {
     struct gdt_generic_datatype needle;
     va_list ap;
@@ -201,7 +215,7 @@ bool vector_find(Vector vector, size_t * index, ...)
     va_end(ap);
 
     for ( size_t i = 0; i < vector->length; ++i ) {
-        if ( !gdt_compare(&needle, &vector->elements[i]) ) {
+        if ( !gdt_compare(&needle, &vector->elements[i], vector->compfunc) ) {
             *index = i;
             return true;
         }

@@ -9,7 +9,8 @@
 typedef struct vector * Vector;
 
 Vector vector_create(const size_t capacity,
-                     const enum gds_datatype type, const int opts);
+                     const enum gds_datatype type,
+                     const int opts, ...);
 void vector_destroy(Vector vector);
 
 bool vector_append(Vector vector, ...);
