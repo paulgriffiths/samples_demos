@@ -128,7 +128,7 @@ bool queue_push(struct queue * queue, ...)
 
     va_list ap;
     va_start(ap, queue);
-    gdt_set_value(&queue->elements[queue->back++], queue->type, ap);
+    gdt_set_value(&queue->elements[queue->back++], queue->type, NULL, ap);
     va_end(ap);
 
     if ( queue->back == queue->capacity ) {

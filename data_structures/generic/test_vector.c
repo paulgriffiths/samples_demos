@@ -362,7 +362,7 @@ static void test_vector_find(void)
     tests_log_test(index == 3, "vector_find() gave wrong index");
 
     status = vector_find(vector, &index, 50ULL);
-    tests_log_test(!status, "vector_find() failed to find element");
+    tests_log_test(!status, "vector_find() incorrectly found element");
 
     vector_destroy(vector);
 }
@@ -465,7 +465,234 @@ void test_vector_find_struct(void)
     tests_log_test(index == 3, "vector_find() gave wrong index");
 
     status = vector_find(vector, &index, (void *) &h5);
-    tests_log_test(!status, "vector_find() failed to find element");
+    tests_log_test(!status, "vector_find() incorrectly found element");
+
+    vector_destroy(vector);
+}
+
+static void test_vector_sort_strings(void)
+{
+    Vector vector = vector_create(4, DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, strdup("Elephant"));
+    vector_set_element_at_index(vector, 1, strdup("Dog"));
+    vector_set_element_at_index(vector, 2, strdup("Giraffe"));
+    vector_set_element_at_index(vector, 3, strdup("Aardvark"));
+
+    bool status;
+    size_t index;
+
+    status = vector_find(vector, &index, "Elephant");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Dog");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Giraffe");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Aardvark");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Pelican");
+    tests_log_test(!status, "vector_find() incorrectly found element");
+
+    vector_sort(vector);
+
+    status = vector_find(vector, &index, "Aardvark");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Dog");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Elephant");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, "Giraffe");
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    vector_destroy(vector);
+}
+
+static void test_vector_sort_sizet(void)
+{
+    Vector vector = vector_create(4, DATATYPE_SIZE_T, 0);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, (size_t) 100);
+    vector_set_element_at_index(vector, 1, (size_t) 400);
+    vector_set_element_at_index(vector, 2, (size_t) 200);
+    vector_set_element_at_index(vector, 3, (size_t) 300);
+
+    bool status;
+    size_t index;
+
+    status = vector_find(vector, &index, (size_t) 100);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 400);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 200);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 300);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 500);
+    tests_log_test(!status, "vector_find() incorrectly found element");
+
+    vector_sort(vector);
+
+    status = vector_find(vector, &index, (size_t) 100);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 200);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 300);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (size_t) 400);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    vector_destroy(vector);
+}
+
+static void test_vector_sort_struct(void)
+{
+    struct hms h1 = {1, 2, 3};
+    struct hms h2 = {1, 2, 4};
+    struct hms h3 = {2, 2, 3};
+    struct hms h4 = {4, 1, 1};
+    struct hms h5 = {5, 2, 4};
+
+    Vector vector = vector_create(4, DATATYPE_POINTER, 0, compare_hms);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, (void *) &h3);
+    vector_set_element_at_index(vector, 1, (void *) &h2);
+    vector_set_element_at_index(vector, 2, (void *) &h1);
+    vector_set_element_at_index(vector, 3, (void *) &h4);
+
+    bool status;
+    size_t index;
+
+    status = vector_find(vector, &index, (void *) &h3);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h2);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h1);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h4);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h5);
+    tests_log_test(!status, "vector_find() incorrectly found element");
+
+    vector_sort(vector);
+
+    status = vector_find(vector, &index, (void *) &h1);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h2);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h3);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, (void *) &h4);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    vector_destroy(vector);
+}
+
+void test_vector_reverse_sort(void)
+{
+    Vector vector = vector_create(4, DATATYPE_LONG, 0);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, 100L);
+    vector_set_element_at_index(vector, 1, 400L);
+    vector_set_element_at_index(vector, 2, 200L);
+    vector_set_element_at_index(vector, 3, 300L);
+
+    bool status;
+    size_t index;
+
+    status = vector_find(vector, &index, 100L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 400L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 200L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 300L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    vector_reverse_sort(vector);
+
+    status = vector_find(vector, &index, 400L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 300L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 200L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 100L);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
 
     vector_destroy(vector);
 }
@@ -476,4 +703,8 @@ void test_vector(void)
     test_vector_free_strings();
     test_vector_find();
     test_vector_find_struct();
+    test_vector_sort_strings();
+    test_vector_sort_sizet();
+    test_vector_sort_struct();
+    test_vector_reverse_sort();
 }

@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+typedef int (*gds_cfunc)(const void *, const void *);
+
 enum gds_option {
     GDS_RESIZABLE = 1,
     GDS_FREE_ON_DESTROY = 2,

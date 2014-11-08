@@ -25,6 +25,8 @@ bool vector_element_at_index(Vector vector, const size_t index, void * p);
 bool vector_set_element_at_index(Vector vector, const size_t index, ...);
 
 bool vector_find(Vector vector, size_t * index, ...);
+void vector_sort(Vector vector);
+void vector_reverse_sort(Vector vector);
 
 bool vector_is_empty(Vector vector);
 size_t vector_length(Vector vector);

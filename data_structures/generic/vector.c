@@ -198,7 +198,7 @@ bool vector_set_element_at_index(struct vector * vector,
 
     va_list ap;
     va_start(ap, index);
-    gdt_set_value(&vector->elements[index], vector->type, ap);
+    gdt_set_value(&vector->elements[index], vector->type, vector->compfunc, ap);
     va_end(ap);
 
     return true;
@@ -211,17 +211,33 @@ bool vector_find(struct vector * vector, size_t * index, ...)
     struct gdt_generic_datatype needle;
     va_list ap;
     va_start(ap, index);
-    gdt_set_value(&needle, vector->type, ap);
+    gdt_set_value(&needle, vector->type, vector->compfunc, ap);
     va_end(ap);
 
     for ( size_t i = 0; i < vector->length; ++i ) {
-        if ( !gdt_compare(&needle, &vector->elements[i], vector->compfunc) ) {
+        if ( !gdt_compare(&needle, &vector->elements[i]) ) {
             *index = i;
             return true;
         }
     }
 
     return false;
+}
+
+/*  Sorts the elements in a vector  */
+
+void vector_sort(struct vector * vector)
+{
+    qsort(vector->elements, vector->length, sizeof *vector->elements,
+          gdt_compare_void);
+}
+
+/*  Sorts the elements in a vector in reverse order  */
+
+void vector_reverse_sort(struct vector * vector)
+{
+    qsort(vector->elements, vector->length, sizeof *vector->elements,
+          gdt_reverse_compare_void);
 }
 
 /*  Checks if a vector is empty  */
@@ -286,7 +302,7 @@ static bool vector_insert_internal(struct vector * vector,
         memmove(dst, src, numcopy * sizeof *src);
     }
 
-    gdt_set_value(&vector->elements[index], vector->type, ap);
+    gdt_set_value(&vector->elements[index], vector->type, vector->compfunc, ap);
     vector->length += 1;
 
     return true;

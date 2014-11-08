@@ -104,7 +104,7 @@ bool stack_push(struct stack * stack, ...)
 
     va_list ap;
     va_start(ap, stack);
-    gdt_set_value(&stack->elements[stack->top++], stack->type, ap);
+    gdt_set_value(&stack->elements[stack->top++], stack->type, NULL, ap);
     va_end(ap);
 
     return true;

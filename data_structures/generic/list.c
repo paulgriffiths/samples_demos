@@ -15,7 +15,7 @@ struct list_node {
 struct list {
     size_t length;
     enum gds_datatype type;
-    int (*compfunc)(const void *, const void *);
+    gds_cfunc compfunc;
     struct list_node * head;
     struct list_node * tail;
 
@@ -191,7 +191,7 @@ bool list_set_element_at_index(struct list * list, const size_t index, ...)
 
     va_list ap;
     va_start(ap, index);
-    gdt_set_value(&node->element, list->type, ap);
+    gdt_set_value(&node->element, list->type, list->compfunc, ap);
     va_end(ap);
 
     return true;
@@ -204,13 +204,13 @@ bool list_find(struct list * list, size_t * index, ...)
     struct gdt_generic_datatype needle;
     va_list ap;
     va_start(ap, index);
-    gdt_set_value(&needle, list->type, ap);
+    gdt_set_value(&needle, list->type, list->compfunc, ap);
     va_end(ap);
 
     struct list_node * node = list->head;
     size_t i = 0;
     while ( node ) {
-        if ( !gdt_compare(&needle, &node->element, list->compfunc) ) {
+        if ( !gdt_compare(&needle, &node->element) ) {
             *index = i;
             return true;
         }
@@ -253,7 +253,7 @@ static struct list_node * list_node_create(struct list * list, va_list ap)
 
     new_node->prev = NULL;
     new_node->next = NULL;
-    gdt_set_value(&new_node->element, list->type, ap);
+    gdt_set_value(&new_node->element, list->type, list->compfunc, ap);
 
     return new_node;
 }

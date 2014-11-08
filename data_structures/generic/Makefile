@@ -42,7 +42,6 @@ tags:
 -include $(DEPENDS)
 
 %.d: %.c
-	@echo "Building dependencies for $<..."
 	@$(CC) -M $(CFLAGS) $< > $@.tmp; \
 		$(SED) 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.tmp > $@; \
 		$(RM) $@.tmp

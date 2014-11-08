@@ -9,6 +9,7 @@
 
 struct gdt_generic_datatype {
     enum gds_datatype type;
+    gds_cfunc compfunc;
     union {
         char c;
         unsigned char uc;
@@ -27,13 +28,15 @@ struct gdt_generic_datatype {
 };
 
 void gdt_set_value(struct gdt_generic_datatype * data,
-                   const enum gds_datatype, va_list ap);
+                   const enum gds_datatype,
+                   gds_cfunc cfunc, va_list ap);
 void gdt_get_value(const struct gdt_generic_datatype * data,
                    const enum gds_datatype type, void * p);
 void gdt_free(struct gdt_generic_datatype * data,
               const enum gds_datatype type);
 int gdt_compare(const struct gdt_generic_datatype * d1,
-                const struct gdt_generic_datatype * d2,
-                int (*compfunc)(const void *, const void *));
+                const struct gdt_generic_datatype * d2);
+int gdt_compare_void(const void * p1, const void * p2);
+int gdt_reverse_compare_void(const void * p1, const void * p2);
 
 #endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPE_H  */
