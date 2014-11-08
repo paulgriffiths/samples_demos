@@ -328,8 +328,48 @@ static void test_vector_free_strings(void)
     vector_destroy(vector);
 }
 
+static void test_vector_find(void)
+{
+    Vector vector = vector_create(1, DATATYPE_UNSIGNED_LONG_LONG,
+                                  GDS_RESIZABLE);
+    if ( !vector ) {
+        perror("couldn't create vector");
+        exit(EXIT_FAILURE);
+    }
+
+    vector_set_element_at_index(vector, 0, 10ULL);
+    vector_append(vector, 20ULL);
+    vector_append(vector, 40ULL);
+    vector_append(vector, 30ULL);
+
+    bool status;
+    size_t index;
+
+    status = vector_find(vector, &index, 10ULL);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 0, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 20ULL);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 1, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 40ULL);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 2, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 30ULL);
+    tests_log_test(status, "vector_find() failed to find element");
+    tests_log_test(index == 3, "vector_find() gave wrong index");
+
+    status = vector_find(vector, &index, 50ULL);
+    tests_log_test(!status, "vector_find() failed to find element");
+
+    vector_destroy(vector);
+}
+
 void test_vector(void)
 {
     test_vector_basic();
     test_vector_free_strings();
+    test_vector_find();
 }

@@ -190,6 +190,26 @@ bool vector_set_element_at_index(struct vector * vector,
     return true;
 }
 
+/*  Finds an element in a vector  */
+
+bool vector_find(Vector vector, size_t * index, ...)
+{
+    struct gdt_generic_datatype needle;
+    va_list ap;
+    va_start(ap, index);
+    gdt_set_value(&needle, vector->type, ap);
+    va_end(ap);
+
+    for ( size_t i = 0; i < vector->length; ++i ) {
+        if ( !gdt_compare(&needle, &vector->elements[i]) ) {
+            *index = i;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /*  Checks if a vector is empty  */
 
 bool vector_is_empty(struct vector * vector)

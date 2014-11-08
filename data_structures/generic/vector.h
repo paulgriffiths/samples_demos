@@ -23,6 +23,8 @@ bool vector_delete_back(Vector vector);
 bool vector_element_at_index(Vector vector, const size_t index, void * p);
 bool vector_set_element_at_index(Vector vector, const size_t index, ...);
 
+bool vector_find(Vector vector, size_t * index, ...);
+
 bool vector_is_empty(Vector vector);
 size_t vector_length(Vector vector);
 size_t vector_capacity(Vector vector);
