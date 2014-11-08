@@ -29,5 +29,7 @@ void gdt_set_value(struct gdt_generic_datatype * data,
                    const enum gds_datatype, va_list ap);
 void gdt_get_value(const struct gdt_generic_datatype * data,
                    const enum gds_datatype type, void * p);
+void gdt_free(struct gdt_generic_datatype * data,
+              const enum gds_datatype type);
 
 #endif      /*  PG_SAMPLES_AND_DEMOS_GENERIC_DATATYPE_H  */

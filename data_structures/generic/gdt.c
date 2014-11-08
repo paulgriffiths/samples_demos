@@ -1,8 +1,10 @@
+#include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
 #include <stdarg.h>
-
 #include "gdt.h"
+
+/*  Gets a value from a generic datatype  */
 
 void gdt_set_value(struct gdt_generic_datatype * data,
                    const enum gds_datatype type, va_list ap)
@@ -66,6 +68,8 @@ void gdt_set_value(struct gdt_generic_datatype * data,
     }
 }
 
+/*  Sets a value in a generic datatype  */
+
 void gdt_get_value(const struct gdt_generic_datatype * data,
                    const enum gds_datatype type, void * p)
 {
@@ -125,5 +129,17 @@ void gdt_get_value(const struct gdt_generic_datatype * data,
         default:
             assert(false);
             break;
+    }
+}
+
+/*  Frees the memory pointer to by a generic pointer datatype  */
+
+void gdt_free(struct gdt_generic_datatype * data, const enum gds_datatype type)
+{
+    if ( type == DATATYPE_POINTER ) {
+        free(data->data.p);
+    }
+    else if ( type == DATATYPE_STRING ) {
+        free(data->data.pc);
     }
 }
