@@ -20,6 +20,7 @@ bool list_delete_front(List list);
 bool list_delete_back(List list);
 
 bool list_element_at_index(List list, const size_t index, void * p);
+bool list_set_element_at_index(List list, const size_t index, ...);
 
 bool list_is_empty(List list);
 size_t list_length(List list);

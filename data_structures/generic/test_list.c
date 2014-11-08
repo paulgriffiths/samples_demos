@@ -225,8 +225,73 @@ static void test_list_free_strings(void)
     list_destroy(list);
 }
 
+static void test_list_set_element(void)
+{
+    List list = list_create(DATATYPE_UNSIGNED_LONG, 0);
+    if ( !list ) {
+        perror("couldn't create list");
+        exit(EXIT_FAILURE);
+    }
+
+    bool status;
+    unsigned long l;
+
+    status = list_append(list, 42UL);
+    tests_log_test(status, "list_append() failed");
+
+    status = list_append(list, 53UL);
+    tests_log_test(status, "list_append() failed");
+
+    status = list_append(list, 65UL);
+    tests_log_test(status, "list_append() failed");
+
+    status = list_append(list, 76UL);
+    tests_log_test(status, "list_append() failed");
+
+    status = list_element_at_index(list, 0, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 42, "list_element_at_index() gave wrong value");
+
+    status = list_element_at_index(list, 1, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 53, "list_element_at_index() gave wrong value");
+
+    status = list_element_at_index(list, 2, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 65, "list_element_at_index() gave wrong value");
+
+    status = list_element_at_index(list, 3, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 76, "list_element_at_index() gave wrong value");
+
+    status = list_set_element_at_index(list, 1, 87UL);
+    tests_log_test(status, "list_set_element_at_index() failed");
+
+    status = list_set_element_at_index(list, 2, 98UL);
+    tests_log_test(status, "list_set_element_at_index() failed");
+
+    status = list_element_at_index(list, 0, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 42, "list_element_at_index() gave wrong value");
+
+    status = list_element_at_index(list, 1, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 87, "list_element_at_index() gave wrong value");
+
+    status = list_element_at_index(list, 2, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 98, "list_element_at_index() gave wrong value");
+
+    status = list_element_at_index(list, 3, &l);
+    tests_log_test(status, "list_element_at_index() failed");
+    tests_log_test(l == 76, "list_element_at_index() gave wrong value");
+
+    list_destroy(list);
+}
+
 void test_list(void)
 {
     test_list_basic();
     test_list_free_strings();
+    test_list_set_element();
 }

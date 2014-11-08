@@ -154,6 +154,8 @@ bool list_delete_back(struct list * list)
     return list_delete_index(list, list->length - 1);
 }
 
+/*  Gets the data at a specified index  */
+
 bool list_element_at_index(struct list * list, const size_t index, void * p)
 {
     struct list_node * node = list_node_at_index(list, index);
@@ -162,6 +164,23 @@ bool list_element_at_index(struct list * list, const size_t index, void * p)
     }
 
     gdt_get_value(&node->element, list->type, p);
+
+    return true;
+}
+
+/*  Gets the data at a specified index  */
+
+bool list_set_element_at_index(struct list * list, const size_t index, ...)
+{
+    struct list_node * node = list_node_at_index(list, index);
+    if ( !node ) {
+        return false;
+    }
+
+    va_list ap;
+    va_start(ap, index);
+    gdt_set_value(&node->element, list->type, ap);
+    va_end(ap);
 
     return true;
 }
