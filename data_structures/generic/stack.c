@@ -60,12 +60,9 @@ struct stack * stack_create(const size_t capacity,
 
 void stack_destroy(struct stack * stack)
 {
-    if ( (stack->type == DATATYPE_POINTER ||
-          stack->type == DATATYPE_STRING) && stack->free_on_destroy ) {
-        while ( !stack_is_empty(stack) ) {
-            void * p;
-            stack_pop(stack, &p);
-            free(p);
+    if ( stack->free_on_destroy ) {
+        while ( stack->top ) {
+            gdt_free(&stack->elements[--stack->top], stack->type);
         }
     }
 

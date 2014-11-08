@@ -138,8 +138,10 @@ void gdt_free(struct gdt_generic_datatype * data, const enum gds_datatype type)
 {
     if ( type == DATATYPE_POINTER ) {
         free(data->data.p);
+        data->data.p = NULL;
     }
     else if ( type == DATATYPE_STRING ) {
         free(data->data.pc);
+        data->data.pc = NULL;
     }
 }

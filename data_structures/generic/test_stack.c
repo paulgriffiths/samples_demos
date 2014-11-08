@@ -113,7 +113,38 @@ static void test_stack_one(void)
     stack_destroy(stk);
 }
 
+static void test_stack_free_strings(void)
+{
+    Stack stack = stack_create(3, DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+    if ( !stack ) {
+        perror("couldn't create stack");
+        exit(EXIT_FAILURE);
+    }
+
+    bool status;
+    size_t sz;
+    char * pc;
+
+    status = stack_push(stack, strdup("First string"));
+    tests_log_test(status, "stack_push() failed");
+
+    status = stack_push(stack, strdup("Second string"));
+    tests_log_test(status, "stack_push() failed");
+
+    status = stack_push(stack, strdup("Third string"));
+    tests_log_test(status, "stack_push() failed");
+
+    sz = stack_size(stack);
+    tests_log_test(sz == 3, "stack_length() gave wrong value");
+
+    status = stack_is_empty(stack);
+    tests_log_test(!status, "stack_is_empty() gave wrong value");
+    
+    stack_destroy(stack);
+}
+
 void test_stack(void)
 {
     test_stack_one();
+    test_stack_free_strings();
 }
