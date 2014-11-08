@@ -15,6 +15,7 @@ struct list_node {
 struct list {
     size_t length;
     enum gds_datatype type;
+    int (*compfunc)(const void *, const void *);
     struct list_node * head;
     struct list_node * tail;
 
@@ -33,7 +34,8 @@ static bool list_insert_internal(struct list * list,
 
 /*  Creates and returns a new list of specified type  */
 
-struct list * list_create(const enum gds_datatype type, const int opts)
+struct list * list_create(const enum gds_datatype type,
+                          const int opts, ...)
 {
     struct list * new_list = malloc(sizeof *new_list);
     if ( !new_list ) {
@@ -53,6 +55,16 @@ struct list * list_create(const enum gds_datatype type, const int opts)
 
     new_list->free_on_destroy = (opts & GDS_FREE_ON_DESTROY) ? true : false;
     new_list->exit_on_error = (opts & GDS_EXIT_ON_ERROR) ? true : false;
+
+    va_list ap;
+    va_start(ap, opts);
+    if ( type == DATATYPE_POINTER ) {
+        new_list->compfunc = va_arg(ap, int (*)(const void *, const void *));
+    }
+    else {
+        new_list->compfunc = NULL;
+    }
+    va_end(ap);
 
     return new_list;
 }
@@ -183,6 +195,31 @@ bool list_set_element_at_index(struct list * list, const size_t index, ...)
     va_end(ap);
 
     return true;
+}
+
+/*  Finds an element in a list  */
+
+bool list_find(struct list * list, size_t * index, ...)
+{
+    struct gdt_generic_datatype needle;
+    va_list ap;
+    va_start(ap, index);
+    gdt_set_value(&needle, list->type, ap);
+    va_end(ap);
+
+    struct list_node * node = list->head;
+    size_t i = 0;
+    while ( node ) {
+        if ( !gdt_compare(&needle, &node->element, list->compfunc) ) {
+            *index = i;
+            return true;
+        }
+
+        node = node->next;
+        ++i;
+    }
+
+    return false;
 }
 
 /*  Checks if a list is empty  */

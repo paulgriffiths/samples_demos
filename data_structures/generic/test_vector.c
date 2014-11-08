@@ -373,7 +373,7 @@ struct hms {
     int second;
 };
 
-int compare_hms(const void * s1, const void * s2)
+static int compare_hms(const void * s1, const void * s2)
 {
     const struct hms * hms1 = *((const struct hms **) s1);
     const struct hms * hms2 = *((const struct hms **) s2);
