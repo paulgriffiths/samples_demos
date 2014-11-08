@@ -67,12 +67,13 @@ struct queue * queue_create(const size_t capacity,
 
 void queue_destroy(struct queue * queue)
 {
-    if ( (queue->type == DATATYPE_POINTER ||
-          queue->type == DATATYPE_STRING) && queue->free_on_destroy ) {
-        while ( !queue_is_empty(queue) ) {
-            void * p;
-            queue_pop(queue, &p);
-            free(p);
+    if ( queue->free_on_destroy ) {
+        while ( queue->size ) {
+            gdt_free(&queue->elements[queue->front++], queue->type);
+            if ( queue->front == queue->capacity ) {
+                queue->front = 0;
+            }
+            queue->size -= 1;
         }
     }
 

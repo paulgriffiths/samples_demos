@@ -6,6 +6,7 @@
 #include "stack.h"
 #include "queue.h"
 #include "test_stack.h"
+#include "test_queue.h"
 #include "test_list.h"
 #include "test_logging.h"
 
@@ -225,6 +226,7 @@ int main(int argc, char ** argv)
 {
     test_stack();
     test_list();
+    test_queue();
 
     printf("%d successes and %d failures from %d tests.\n",
            tests_get_successes(), tests_get_failures(),
