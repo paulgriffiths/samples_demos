@@ -236,7 +236,7 @@ static struct list_node * list_node_at_index(struct list * list,
         node = list->tail;
     }
     else {
-        if ( index <= list->length / 2 ) {
+        if ( index < list->length / 2 ) {
             node = list->head;
             for ( size_t i = 0; i < index; ++i ) {
                 node = node->next;
