@@ -115,7 +115,8 @@ static void test_queue_one(void)
 
 static void test_queue_free_strings(void)
 {
-    Queue queue = queue_create(4, DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+    Queue queue = queue_create(1, DATATYPE_STRING,
+                               GDS_RESIZABLE | GDS_FREE_ON_DESTROY);
     if ( !queue ) {
         perror("couldn't create queue");
         exit(EXIT_FAILURE);
@@ -138,6 +139,12 @@ static void test_queue_free_strings(void)
 
     sz = queue_size(queue);
     tests_log_test(sz == 4, "queue_length() gave wrong value");
+
+    sz = queue_capacity(queue);
+    tests_log_test(sz == 4, "queue_capacity() gave wrong value");
+
+    sz = queue_free_space(queue);
+    tests_log_test(sz == 0, "queue_free_space() gave wrong value");
 
     status = queue_is_empty(queue);
     tests_log_test(!status, "queue_is_empty() gave wrong value");

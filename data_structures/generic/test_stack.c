@@ -115,7 +115,8 @@ static void test_stack_one(void)
 
 static void test_stack_free_strings(void)
 {
-    Stack stack = stack_create(3, DATATYPE_STRING, GDS_FREE_ON_DESTROY);
+    Stack stack = stack_create(1, DATATYPE_STRING,
+                               GDS_RESIZABLE | GDS_FREE_ON_DESTROY);
     if ( !stack ) {
         perror("couldn't create stack");
         exit(EXIT_FAILURE);
@@ -123,7 +124,6 @@ static void test_stack_free_strings(void)
 
     bool status;
     size_t sz;
-    char * pc;
 
     status = stack_push(stack, strdup("First string"));
     tests_log_test(status, "stack_push() failed");
@@ -136,6 +136,12 @@ static void test_stack_free_strings(void)
 
     sz = stack_size(stack);
     tests_log_test(sz == 3, "stack_length() gave wrong value");
+
+    sz = stack_capacity(stack);
+    tests_log_test(sz == 4, "stack_capacity() gave wrong value");
+
+    sz = stack_free_space(stack);
+    tests_log_test(sz == 1, "stack_free_space() gave wrong value");
 
     status = stack_is_empty(stack);
     tests_log_test(!status, "stack_is_empty() gave wrong value");
