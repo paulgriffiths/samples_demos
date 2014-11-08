@@ -4,16 +4,18 @@
 #include "test_stack.h"
 #include "test_queue.h"
 #include "test_list.h"
+#include "test_vector.h"
 #include "test_logging.h"
 
 int main(int argc, char ** argv)
 {
-    bool stack = false, queue = false, list = false;
+    bool stack = false, queue = false, list = false, vector = false;
 
     if ( argc < 2 ) {
         stack = true;
         queue = true;
         list = true;
+        vector = true;
     }
     else {
         size_t i = 0;
@@ -27,6 +29,9 @@ int main(int argc, char ** argv)
             }
             else if ( !strcmp(argv[i], "list") ) {
                 list = true;
+            }
+            else if ( !strcmp(argv[i], "vector") ) {
+                vector = true;
             }
         }
     }
@@ -44,6 +49,11 @@ int main(int argc, char ** argv)
     if ( list ) {
         printf("Running unit tests for generic list...\n");
         test_list();
+    }
+
+    if ( vector ) {
+        printf("Running unit tests for generic vector...\n");
+        test_vector();
     }
 
     printf("%d successes and %d failures from %d tests.\n",
